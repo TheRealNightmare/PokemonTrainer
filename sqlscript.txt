@@ -1,0 +1,15 @@
+-- 1. Create the database (if you haven't already)
+CREATE DATABASE IF NOT EXISTS poketeam_db;
+
+-- 2. Create a new user named 'trainer' with password 'password'
+-- (You can change 'password' to whatever you want)
+CREATE USER 'trainer'@'localhost' IDENTIFIED BY 'password';
+
+-- 3. Give this user full control over the pokemon database
+GRANT ALL PRIVILEGES ON poketeam_db.* TO 'trainer'@'localhost';
+
+-- 4. Apply changes
+FLUSH PRIVILEGES;
+
+-- 5. Exit MySQL
+EXIT;

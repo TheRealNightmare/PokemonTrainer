@@ -10,18 +10,15 @@
         padding: 0;
         font-family: Arial, sans-serif;
       }
-
       .main {
         width: 100vw;
         height: 100vh;
-        background: #dceafe;
         background: linear-gradient(
           150deg,
           rgba(220, 234, 254, 1) 0%,
           rgba(252, 233, 245, 1) 100%
         );
       }
-
       .card {
         width: 450px;
         min-height: 650px;
@@ -34,7 +31,6 @@
         border-radius: 10px;
         overflow: hidden;
       }
-
       .top {
         width: 100%;
         height: 130px;
@@ -43,19 +39,16 @@
         align-items: center;
         justify-content: center;
       }
-
       .mid {
         width: 100%;
         padding-bottom: 20px;
       }
-
       .mid-top {
         display: flex;
         margin-left: 8%;
         gap: 20px;
         cursor: pointer;
       }
-
       .mid-top p {
         margin: 0;
         padding-bottom: 5px;
@@ -63,32 +56,25 @@
         font-weight: bold;
         transition: 0.3s;
       }
-
       .mid-top p.active-tab {
         color: #000;
         border-bottom: 3px solid #fdc700;
       }
-
       .mid-mid {
         display: flex;
         flex-direction: column;
         margin: 0 8%;
         margin-top: 20px;
       }
-
       .input-group {
         margin-bottom: 15px;
       }
-
       .input-group p {
         margin: 5px 0;
         font-size: 14px;
         color: #333;
       }
-
-      .mid-mid input,
-      .mid-mid select,
-      .mid-mid textarea {
+      .mid-mid input {
         width: 100%;
         height: 50px;
         border: 1px solid #ccc;
@@ -96,26 +82,11 @@
         padding: 5px 10px;
         font-size: 16px;
         box-sizing: border-box;
-        transition: 0.2s;
       }
-
       .mid-mid input:focus {
         border-color: #fdc700;
         outline: none;
-        box-shadow: 0 0 0 2px rgba(253, 199, 0, 0.25);
       }
-
-      .forgot-pass {
-        text-align: right;
-        margin-top: 5px;
-        font-size: 13px;
-      }
-
-      .forgot-pass a {
-        color: #666;
-        text-decoration: none;
-      }
-
       .bot {
         width: 100%;
         height: 100px;
@@ -124,7 +95,6 @@
         align-items: center;
         justify-content: center;
       }
-
       .bot button {
         width: 84%;
         height: 55px;
@@ -137,37 +107,23 @@
         cursor: pointer;
         transition: background 0.3s;
       }
-
       .bot button:hover {
         background-color: #eec111;
       }
-
       .bot p {
         margin-top: 10px;
         font-size: 12px;
         color: #777;
       }
-
       .hidden {
         display: none;
       }
     </style>
   </head>
-
   <body>
     <div class="main">
       <div class="card">
         <div class="top">
-          <img
-            src="/static/ball.png"
-            alt="Logo"
-            style="
-              width: 50px;
-              height: 50px;
-              margin-bottom: 10px;
-              margin-top: 15px;
-            "
-          />
           <h3 id="header-title">Welcome back, Trainer!</h3>
         </div>
 
@@ -178,7 +134,6 @@
             </p>
             <p id="tab-register" onclick="switchTab('register')">Register</p>
           </div>
-
           <hr
             style="
               width: 84%;
@@ -192,33 +147,42 @@
             <div id="login-form">
               <div class="input-group">
                 <p>Trainer Email</p>
-                <input type="email" placeholder="Enter your email" />
+                <input
+                  type="email"
+                  id="login-email"
+                  placeholder="Enter your email"
+                />
               </div>
               <div class="input-group">
                 <p>Password</p>
-                <input type="password" placeholder="Enter your password" />
-              </div>
-              <div class="forgot-pass">
-                <a href="#">Forgot Password?</a>
+                <input
+                  type="password"
+                  id="login-pass"
+                  placeholder="Enter your password"
+                />
               </div>
             </div>
 
             <div id="register-form" class="hidden">
               <div class="input-group">
                 <p>Trainer Name</p>
-                <input type="text" placeholder="Ash Ketchum" />
+                <input type="text" id="reg-name" placeholder="Ash Ketchum" />
               </div>
               <div class="input-group">
                 <p>Trainer Email</p>
-                <input type="email" placeholder="Enter your email" />
+                <input
+                  type="email"
+                  id="reg-email"
+                  placeholder="Enter your email"
+                />
               </div>
               <div class="input-group">
                 <p>Password</p>
-                <input type="password" placeholder="Create a password" />
-              </div>
-              <div class="input-group">
-                <p>Confirm Password</p>
-                <input type="password" placeholder="Confirm password" />
+                <input
+                  type="password"
+                  id="reg-pass"
+                  placeholder="Create a password"
+                />
               </div>
             </div>
           </div>
@@ -232,7 +196,10 @@
     </div>
 
     <script>
+      let currentTab = "login";
+
       function switchTab(tab) {
+        currentTab = tab;
         const loginForm = document.getElementById("login-form");
         const registerForm = document.getElementById("register-form");
         const loginTab = document.getElementById("tab-login");
@@ -243,23 +210,72 @@
         if (tab === "login") {
           loginForm.classList.remove("hidden");
           registerForm.classList.add("hidden");
-
           loginTab.classList.add("active-tab");
           registerTab.classList.remove("active-tab");
-
           actionBtn.textContent = "Log In & Explore";
           headerTitle.textContent = "Welcome back, Trainer!";
         } else {
           registerForm.classList.remove("hidden");
           loginForm.classList.add("hidden");
-
           registerTab.classList.add("active-tab");
           loginTab.classList.remove("active-tab");
-
           actionBtn.textContent = "Register & Start Journey";
           headerTitle.textContent = "New Adventure Awaits!";
         }
       }
+
+      document
+        .getElementById("action-btn")
+        .addEventListener("click", async () => {
+          if (currentTab === "login") {
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-pass").value;
+
+            if (!email || !password) return alert("Please fill all fields");
+
+            try {
+              const res = await fetch("/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+              });
+              const data = await res.json();
+
+              if (res.ok) {
+                window.location.href = data.redirect;
+              } else {
+                alert(data.message);
+              }
+            } catch (e) {
+              alert("Connection failed");
+            }
+          } else {
+            const name = document.getElementById("reg-name").value;
+            const email = document.getElementById("reg-email").value;
+            const password = document.getElementById("reg-pass").value;
+
+            if (!name || !email || !password)
+              return alert("Please fill all fields");
+
+            try {
+              const res = await fetch("/api/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password }),
+              });
+              const data = await res.json();
+
+              if (res.ok) {
+                alert("Registration Successful! Please Log in.");
+                switchTab("login");
+              } else {
+                alert(data.message);
+              }
+            } catch (e) {
+              alert("Connection failed");
+            }
+          }
+        });
     </script>
   </body>
 </html>
