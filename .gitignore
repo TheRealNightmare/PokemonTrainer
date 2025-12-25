@@ -1,2 +1,33 @@
-/.venv
-/.env
+# --- Python ---
+/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Flask ---
+instance/
+.webassets-cache
+
+# --- Environment Variables (CRITICAL) ---
+.env
+.env.local
+
+# --- Database ---
+# Since you use MySQL, the data isn't a file, but if you switch to SQLite:
+*.db
+*.sqlite3
+
+# --- IDEs/Editors ---
+.vscode/
+.idea/
+*.swp
+
+# --- OS Generated ---
+.DS_Store
+Thumbs.db
