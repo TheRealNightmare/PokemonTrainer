@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PokeTeam Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #DCEAFE;
+            background: linear-gradient(150deg, rgba(220, 234, 254, 1) 0%, rgba(252, 233, 245, 1) 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-area h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            background: #ffecec;
+            color: #d32f2f;
+            border: 1px solid #ffcdd2;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #ffcdd2;
+        }
+
+        /* Main Layout */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 350px 1fr; /* Sidebar vs Content */
+            gap: 30px;
+        }
+
+        /* Section Cards */
+        .panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .panel-header h3 {
+            margin: 0;
+            color: #444;
+        }
+
+        .cp-badge {
+            background: #FDC700;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* My Team Styling */
+        .team-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .team-slot {
+            display: flex;
+            align-items: center;
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px dashed #ddd;
+            transition: 0.2s;
+        }
+
+        .team-slot.filled {
+            background: #fff;
+            border: 2px solid #FDC700;
+        }
+
+        .slot-img {
+            width: 60px;
+            height: 60px;
+            background: #eee;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .slot-info {
+            flex-grow: 1;
+        }
+
+        .slot-info h4 {
+            margin: 0;
+            font-size: 16px;
+            text-transform: capitalize;
+        }
+
+        .slot-info p {
+            margin: 3px 0 0 0;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .remove-btn:hover {
+            color: red;
+        }
+
+        /* Wild Pokemon Grid */
+        .wild-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .poke-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            text-align: center;
+            padding: 15px;
+            transition: 0.2s;
+            position: relative;
+        }
+
+        .poke-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #FDC700;
+        }
+
+        .poke-card img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .poke-card h4 {
+            margin: 10px 0 5px 0;
+            text-transform: capitalize;
+        }
+
+        .type-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .add-btn {
+            width: 100%;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .add-btn:hover {
+            background: #FDC700;
+            color: black;
+        }
+
+        .add-btn:disabled {
+            background: #eee;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-area">
+            <img src="./ball.png" alt="Logo" style="width: 30px;">
+            <h2>PokéTeam Lite</h2>
+        </div>
+        <div class="user-area">
+            <span>Welcome, <b>Ash</b></span>
+            <a href="login.html" class="logout-btn">Log Out</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="panel">
+            <div class="panel-header">
+                <h3>My Dream Team</h3>
+                <span class="cp-badge">CP: <span id="total-cp">0</span></span>
+            </div>
+            <div id="team-container" class="team-list">
+                </div>
+            <p style="font-size: 12px; color: #888; text-align: center; margin-top: 15px;">
+                Max 6 Pokémon allowed.
+            </p>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <h3>Wild Pokémon</h3>
+                <input type="text" placeholder="Search..." style="padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc;">
+            </div>
+            <div id="wild-container" class="wild-grid">
+                </div>
+        </div>
+
+    </div>
+
+    <script>
+        // MOCK DATABASE DATA (Simulating your SQL DB)
+        const allPokemon = [
+            { id: 1, name: 'bulbasaur', type: 'grass', cp: 320, color: '#78C850', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png' },
+            { id: 2, name: 'charmander', type: 'fire', cp: 410, color: '#F08030', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png' },
+            { id: 3, name: 'squirtle', type: 'water', cp: 350, color: '#6890F0', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png' },
+            { id: 4, name: 'pikachu', type: 'electric', cp: 500, color: '#F8D030', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png' },
+            { id: 5, name: 'jigglypuff', type: 'normal', cp: 190, color: '#A8A878', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png' },
+            { id: 6, name: 'gengar', type: 'ghost', cp: 950, color: '#705898', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png' },
+            { id: 7, name: 'eevee', type: 'normal', cp: 280, color: '#A8A878', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png' },
+            { id: 8, name: 'snorlax', type: 'normal', cp: 1200, color: '#A8A878', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/143.png' },
+            { id: 9, name: 'mewtwo', type: 'psychic', cp: 2500, color: '#F85888', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/150.png' },
+            { id: 10, name: 'dragonite', type: 'dragon', cp: 2100, color: '#7038F8', img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/149.png' },
+        ];
+
+        // USER STATE (Simulating User_Teams table)
+        let myTeam = [];
+
+        // RENDER FUNCTIONS
+        function renderTeam() {
+            const container = document.getElementById('team-container');
+            container.innerHTML = '';
+            let totalCp = 0;
+
+            // Render 6 slots
+            for (let i = 0; i < 6; i++) {
+                if (myTeam[i]) {
+                    // Filled Slot
+                    const p = myTeam[i];
+                    totalCp += p.cp;
+                    container.innerHTML += `
+                        <div class="team-slot filled">
+                            <img src="${p.img}" class="slot-img">
+                            <div class="slot-info">
+                                <h4>${p.name}</h4>
+                                <p>CP: ${p.cp}</p>
+                            </div>
+                            <button class="remove-btn" onclick="removeFromTeam(${p.id})">&times;</button>
+                        </div>
+                    `;
+                } else {
+                    // Empty Slot
+                    container.innerHTML += `
+                        <div class="team-slot">
+                            <div class="slot-img" style="background: #eee;"></div>
+                            <div class="slot-info">
+                                <p style="color:#aaa; font-style:italic;">Empty Slot</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Update Total CP
+            document.getElementById('total-cp').innerText = totalCp;
+            
+            // Re-render wild list to update button states
+            renderWild();
+        }
+
+        function renderWild() {
+            const container = document.getElementById('wild-container');
+            container.innerHTML = '';
+
+            allPokemon.forEach(p => {
+                // Check if already in team
+                const isInTeam = myTeam.find(member => member.id === p.id);
+                const isTeamFull = myTeam.length >= 6;
+
+                container.innerHTML += `
+                    <div class="poke-card">
+                        <img src="${p.img}" alt="${p.name}">
+                        <h4>${p.name}</h4>
+                        <span class="type-pill" style="background:${p.color}">${p.type}</span>
+                        <p style="font-size:12px; font-weight:bold; color:#555;">CP: ${p.cp}</p>
+                        <button class="add-btn" 
+                            onclick="addToTeam(${p.id})" 
+                            ${isInTeam || isTeamFull ? 'disabled' : ''}>
+                            ${isInTeam ? 'Caught' : 'Add to Team'}
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        // LOGIC FUNCTIONS
+        function addToTeam(id) {
+            if (myTeam.length >= 6) {
+                alert("Your team is full! Remove a Pokemon first.");
+                return;
+            }
+            const pokemon = allPokemon.find(p => p.id === id);
+            if (pokemon && !myTeam.includes(pokemon)) {
+                myTeam.push(pokemon);
+                renderTeam();
+            }
+        }
+
+        function removeFromTeam(id) {
+            myTeam = myTeam.filter(p => p.id !== id);
+            renderTeam();
+        }
+
+        // INIT
+        renderTeam();
+        renderWild();
+
+    </script>
+</body>
+</html>
