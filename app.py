@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from werkzeug.security import generate_password_hash, check_password_hash
 from dotenv import load_dotenv
 from database import db, User, Pokemon, Team
-
+from seed import seed;
 load_dotenv()
 
 app = Flask(__name__)
@@ -125,23 +125,9 @@ def remove_from_team():
     
     return jsonify({"error": "Pokemon not found in team"}), 404
 
-def seed_database():
-    if not Pokemon.query.first():
-        print("Seeding Database...")
-        starters = [
-            Pokemon(name='Bulbasaur', type='Grass', cp=320, image_url='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png'),
-            Pokemon(name='Charmander', type='Fire', cp=410, image_url='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png'),
-            Pokemon(name='Squirtle', type='Water', cp=350, image_url='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png'),
-            Pokemon(name='Pikachu', type='Electric', cp=500, image_url='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png'),
-            Pokemon(name='Gengar', type='Ghost', cp=950, image_url='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/94.png'),
-            Pokemon(name='Snorlax', type='Normal', cp=1200, image_url='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/143.png'),
-        ]
-        db.session.add_all(starters)
-        db.session.commit()
-        print("Database Seeded!")
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        seed_database()
+        seed()
     app.run(debug=True, port=5000)
