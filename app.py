@@ -5,8 +5,14 @@ from dotenv import load_dotenv
 from database import db, User, Pokemon, Team
 from seed import seed_database as seed
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
+
 app = Flask(__name__)
 
+print(f"Connecting to host: {os.getenv('DB_HOST')}")
+
+# Now these variables will populate correctly
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -122,7 +128,6 @@ def remove_from_team():
         return jsonify({"message": "Removed from team"})
     
     return jsonify({"error": "Pokemon not found in team"}), 404
-
 
 if __name__ == '__main__':
     with app.app_context():
