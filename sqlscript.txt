@@ -1,15 +1,108 @@
--- 1. Create the database (if you haven't already)
+==========================================================
+-- PART 1: Database Setup & Configuration
+-- Source: sqlscript.txt
+==========================================================
+
+-- 1. Create the database
 CREATE DATABASE IF NOT EXISTS poketeam_db;
 
--- 2. Create a new user named 'trainer' with password 'password'
--- (You can change 'password' to whatever you want)
+-- 2. Create the user
 CREATE USER 'trainer'@'localhost' IDENTIFIED BY 'password';
 
--- 3. Give this user full control over the pokemon database
+-- 3. Grant privileges
 GRANT ALL PRIVILEGES ON poketeam_db.* TO 'trainer'@'localhost';
 
 -- 4. Apply changes
 FLUSH PRIVILEGES;
 
--- 5. Exit MySQL
-EXIT;
+
+==========================================================
+PART 2: Table Creation (Schema)
+Generated from SQLAlchemy Models in database.py
+==========================================================
+
+-- Table: users
+CREATE TABLE users (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+-- Table: pokemon
+CREATE TABLE pokemon (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    cp INTEGER NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+-- Table: user_teams
+CREATE TABLE user_teams (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    user_id INTEGER NOT NULL,
+    pokemon_id INTEGER NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY(user_id) REFERENCES users (id),
+    FOREIGN KEY(pokemon_id) REFERENCES pokemon (id)
+);
+
+
+==========================================================
+PART 3: Application Logic Queries
+Generated from ORM operations in app.py & seed.py
+==========================================================
+
+-- --- Seeding Data (seed.py) ---
+
+-- Check if data exists
+SELECT * FROM pokemon LIMIT 1;
+
+-- Insert Pokemon (Batch operation)
+INSERT INTO pokemon (name, type, cp, image_url) VALUES (?, ?, ?, ?);
+
+
+-- --- User Authentication (app.py) ---
+
+-- Register: Check if email exists
+SELECT * FROM users WHERE email = ? LIMIT 1;
+
+-- Register: Create new user
+INSERT INTO users (name, email, password) VALUES (?, ?, ?);
+
+-- Login: Fetch user by email
+SELECT * FROM users WHERE email = ? LIMIT 1;
+
+
+--- Dashboard Operations (app.py) ---
+
+-- Get Wild Pokemon (Fetch all)
+SELECT * FROM pokemon;
+
+-- Get My Team (Join query)
+-- SQLAlchemy: db.session.query(Pokemon).join(Team).filter(Team.user_id == session['user_id']).all()
+SELECT pokemon.id, pokemon.name, pokemon.type, pokemon.cp, pokemon.image_url 
+FROM pokemon 
+JOIN user_teams ON pokemon.id = user_teams.pokemon_id 
+WHERE user_teams.user_id = ?;
+
+
+--- Team Management (app.py) ---
+
+-- Add to Team: Check current team size
+SELECT count(*) FROM user_teams WHERE user_id = ?;
+
+-- Add to Team: Check if specific Pokemon already exists in team
+SELECT * FROM user_teams WHERE user_id = ? AND pokemon_id = ? LIMIT 1;
+
+-- Add to Team: Insert new record
+INSERT INTO user_teams (user_id, pokemon_id) VALUES (?, ?);
+
+-- Remove from Team: Find specific member record
+SELECT * FROM user_teams WHERE user_id = ? AND pokemon_id = ? LIMIT 1;
+
+-- Remove from Team: Delete record
+DELETE FROM user_teams WHERE id = ?;
